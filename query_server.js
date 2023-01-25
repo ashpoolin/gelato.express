@@ -23,6 +23,17 @@ const after = (new Date(Date.now() - 604800000)).toISOString().split('T')[0];
     }) 
   }
 
+  const getLatestBalances = () => {
+    return new Promise(function(resolve, reject) {
+      pool.query(`SELECT *, FLOOR(latest_balance / (select sum(latest_balance) from latest_exchange_balances) * 100 * 100) / 100 as pct_share FROM latest_exchange_balances order by latest_balance DESC;`, (error, results) => {
+        if (error) {
+          reject(error)
+        }
+        resolve(results.rows);
+      })
+    }) 
+  }
+
   const getLatestEvents = () => {
     return new Promise(function(resolve, reject) {
       pool.query(`select dt, slot, owner, floor(sol) as sol, floor(delta) as delta from sol_delta_data order by dt desc limit 50`, (error, results) => {
@@ -33,8 +44,11 @@ const after = (new Date(Date.now() - 604800000)).toISOString().split('T')[0];
       })
     }) 
   }
+
+
   
   module.exports = {
     getExchangeBalance,
-    getLatestEvents
+    getLatestEvents,
+    getLatestBalances
   }
