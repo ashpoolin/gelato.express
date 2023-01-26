@@ -34,6 +34,17 @@ const after = (new Date(Date.now() - 604800000)).toISOString().split('T')[0];
     }) 
   }
 
+  const getInflowData = () => {
+    return new Promise(function(resolve, reject) {
+      pool.query(`select t1.*, FLOOR(t1.inflows/abs(t1.outflows) * 100) / 100 as ratio from (select dt::date, sum(floor(delta)) as net, sum(floor(delta)) FILTER (WHERE delta > 0) AS inflows, sum(floor(delta)) FILTER (WHERE delta <= 0) AS outflows from sol_delta_data group by dt::date order by dt::date asc) t1`, (error, results) => {
+        if (error) {
+          reject(error)
+        }
+        resolve(results.rows);
+      })
+    }) 
+  }
+
   const getLatestEvents = () => {
     return new Promise(function(resolve, reject) {
       pool.query(`select dt, slot, owner, floor(sol) as sol, floor(delta) as delta from sol_delta_data order by dt desc limit 50`, (error, results) => {
@@ -46,9 +57,10 @@ const after = (new Date(Date.now() - 604800000)).toISOString().split('T')[0];
   }
 
 
-  
+
   module.exports = {
     getExchangeBalance,
+    getInflowData,
     getLatestEvents,
-    getLatestBalances
+    getLatestBalances,
   }

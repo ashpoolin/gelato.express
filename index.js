@@ -29,6 +29,16 @@ app.get('/events', (req, res) => {
   })
 })
 
+app.get('/inflows', (req, res) => {
+  query_server.getInflowData()
+  .then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
 app.get('/:exchange', (req, res) => {
   query_server.getExchangeBalance(req.params.exchange)
   .then(response => {
@@ -38,8 +48,6 @@ app.get('/:exchange', (req, res) => {
     res.status(500).send(error);
   })
 })
-
-
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
