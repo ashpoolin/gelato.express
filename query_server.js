@@ -10,7 +10,7 @@ const pool = new Pool({
 
   // gives you the last week of data
 const after = (new Date(Date.now() - 604800000)).toISOString().split('T')[0];
-
+const after_inflows = '2022-11-30'
 
   const getExchangeBalance = (exchange) => {
     return new Promise(function(resolve, reject) {
@@ -36,7 +36,7 @@ const after = (new Date(Date.now() - 604800000)).toISOString().split('T')[0];
 
   const getInflowData = () => {
     return new Promise(function(resolve, reject) {
-      pool.query(`select t1.*, FLOOR(t1.inflows/abs(t1.outflows) * 100) / 100 as ratio from (select dt::date, sum(floor(delta)) as net, sum(floor(delta)) FILTER (WHERE delta > 0) AS inflows, sum(floor(delta)) FILTER (WHERE delta <= 0) AS outflows from sol_delta_data group by dt::date order by dt::date asc) t1`, (error, results) => {
+      pool.query(`select t1.*, FLOOR(t1.inflows/abs(t1.outflows) * 100) / 100 as ratio from (select dt::date, sum(floor(delta)) as net, sum(floor(delta)) FILTER (WHERE delta > 0) AS inflows, sum(floor(delta)) FILTER (WHERE delta <= 0) AS outflows from sol_delta_data where dt::date > '${after_inflows}' group by dt::date order by dt::date asc) t1`, (error, results) => {
         if (error) {
           reject(error)
         }
