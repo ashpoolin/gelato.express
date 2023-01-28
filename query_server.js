@@ -47,7 +47,7 @@ const after_inflows = '2022-11-30'
 
   const getLatestEvents = () => {
     return new Promise(function(resolve, reject) {
-      pool.query(`select dt, slot, owner, floor(sol) as sol, floor(delta) as delta from sol_delta_data order by dt desc limit 50`, (error, results) => {
+      pool.query(`select dt, slot, owner, floor(sol) as sol, floor(delta) as delta from sol_delta_data order by dt desc limit 100`, (error, results) => {
         if (error) {
           reject(error)
         }
