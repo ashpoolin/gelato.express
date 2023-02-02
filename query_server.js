@@ -56,6 +56,17 @@ const after_inflows = '2022-11-30'
     }) 
   }
 
+  const getWebhookEvents = () => {
+    return new Promise(function(resolve, reject) {
+      pool.query(`select to_timestamp(blocktime) as dt, signature, source, destination, sol_amount as amount from webhooks_sol_event_log where sol_amount > 10000 order by blocktime desc limit 100;`, (error, results) => {
+        if (error) {
+          reject(error)
+        }
+        resolve(results.rows);
+      })
+    }) 
+  }
+
 
 
   module.exports = {
@@ -63,4 +74,5 @@ const after_inflows = '2022-11-30'
     getInflowData,
     getLatestEvents,
     getLatestBalances,
+    getWebhookEvents
   }
