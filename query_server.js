@@ -58,7 +58,7 @@ const after_inflows = '2022-11-30'
 
   const getWebhookEvents = () => {
     return new Promise(function(resolve, reject) {
-      pool.query(`select to_timestamp(blocktime) as dt, signature, source, destination, sol_amount as amount from webhooks_sol_event_log where sol_amount > 10000 order by blocktime desc limit 100;`, (error, results) => {
+      pool.query(`select * from webhooks_sol_event_log_labeled where amount > 10000 order by dt desc limit 100;`, (error, results) => {
         if (error) {
           reject(error)
         }
