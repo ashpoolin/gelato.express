@@ -23,6 +23,17 @@ const after_inflows = '2022-11-30'
     }) 
   }
 
+  const getExchangeSplBalance = (exchange, mint) => {
+    return new Promise(function(resolve, reject) {
+      pool.query(`SELECT * FROM spl_event_log_reduced where owner = '${exchange}' and mint = '${mint}' and date::date > '${after}'`, (error, results) => {
+        if (error) {
+          reject(error)
+        }
+        resolve(results.rows);
+      })
+    }) 
+  }
+
   const getLatestBalances = () => {
     return new Promise(function(resolve, reject) {
       pool.query(`SELECT *, FLOOR(latest_balance / (select sum(latest_balance) from latest_exchange_balances) * 100 * 100) / 100 as pct_share FROM latest_exchange_balances order by latest_balance DESC;`, (error, results) => {
@@ -71,6 +82,7 @@ const after_inflows = '2022-11-30'
 
   module.exports = {
     getExchangeBalance,
+    getExchangeSplBalance,
     getInflowData,
     getLatestEvents,
     getLatestBalances,
