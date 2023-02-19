@@ -12,6 +12,17 @@ const pool = new Pool({
 const after = (new Date(Date.now() - 604800000)).toISOString().split('T')[0];
 const after_inflows = '2022-11-30'
 
+  const getWalletLabels = (address) => {
+    return new Promise(function(resolve, reject) {
+      pool.query(`SELECT * FROM sol_address_defs where address = '${address}'`, (error, results) => {
+        if (error) {
+          reject(error)
+        }
+        resolve(results.rows);
+      })
+    }) 
+  }
+
   const getExchangeBalance = (exchange) => {
     return new Promise(function(resolve, reject) {
       pool.query(`SELECT * FROM sol_event_log_reduced where owner = '${exchange}' and date_trunc > '${after}'`, (error, results) => {
@@ -81,6 +92,7 @@ const after_inflows = '2022-11-30'
 
 
   module.exports = {
+    getWalletLabels,
     getExchangeBalance,
     getExchangeSplBalance,
     getInflowData,

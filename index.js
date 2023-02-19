@@ -9,6 +9,16 @@ const query_server = require('./query_server')
 
 app.use(cors())
 
+app.get('/labels/:owner', (req, res) => {
+  query_server.getWalletLabels(req.params.owner)
+  .then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
 app.get('/balances', (req, res) => {
   query_server.getLatestBalances()
   .then(response => {
