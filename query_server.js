@@ -23,6 +23,17 @@ const after_inflows = '2022-11-30'
     }) 
   }
 
+  const getPoolRatios = () => {
+    return new Promise(function(resolve, reject) {
+      pool.query(`SELECT * FROM pool_ratios_current`, (error, results) => {
+        if (error) {
+          reject(error)
+        }
+        resolve(results.rows);
+      })
+    }) 
+  }
+
   const getExchangeBalance = (exchange) => {
     return new Promise(function(resolve, reject) {
       pool.query(`SELECT * FROM sol_event_log_reduced where owner = '${exchange}' and date_trunc > '${after}'`, (error, results) => {
@@ -93,6 +104,7 @@ const after_inflows = '2022-11-30'
 
   module.exports = {
     getWalletLabels,
+    getPoolRatios,
     getExchangeBalance,
     getExchangeSplBalance,
     getInflowData,
