@@ -34,6 +34,17 @@ const getStakeChartData = () => {
   }) 
 }
 
+const getSolanaSupply = () => {
+  return new Promise(function(resolve, reject) {
+    pool.query(`SELECT * FROM solana_supply where dt::date > '${after_inflows}'`, (error, results) => {
+      if (error) {
+        reject(error)
+      }
+      resolve(results.rows);
+    })
+  }) 
+}
+
   const getWalletLabels = (address) => {
     return new Promise(function(resolve, reject) {
       pool.query(`SELECT * FROM sol_address_defs where address = '${address}'`, (error, results) => {
@@ -125,6 +136,7 @@ const getStakeChartData = () => {
   module.exports = {
     getStakeEvents,
     getStakeChartData,
+    getSolanaSupply,
     getWalletLabels,
     getPoolRatios,
     getExchangeBalance,
