@@ -59,6 +59,26 @@ app.get('/whevents', (req, res) => {
   })
 })
 
+app.get('/stakeevents', (req, res) => {
+  query_server.getStakeEvents()
+  .then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
+app.get('/stakechartdata', (req, res) => {
+  query_server.getStakeChartData()
+  .then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
 app.get('/inflows', (req, res) => {
   query_server.getInflowData()
   .then(response => {

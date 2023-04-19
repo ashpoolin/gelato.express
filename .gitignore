@@ -1,5 +1,7 @@
 # misc
 .env
+.env_local
+.env_render
 
 # dependencies
 /node_modules
