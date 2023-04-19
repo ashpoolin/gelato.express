@@ -12,6 +12,28 @@ const pool = new Pool({
 const after = (new Date(Date.now() - 604800000)).toISOString().split('T')[0];
 const after_inflows = '2022-11-30'
 
+const getStakeEvents = () => {
+  return new Promise(function(resolve, reject) {
+    pool.query(`select t1.program, t1.type, to_timestamp(t1.blocktime) as dt, t1.signature, t1.authority2, t1.source, t1.destination, t1.uiamount from (select distinct * from stake_program_event_log where uiAmount > 8000) t1 order by t1.blocktime desc limit 250;`, (error, results) => {
+      if (error) {
+        reject(error)
+      }
+      resolve(results.rows);
+    })
+  }) 
+}
+
+const getStakeChartData = () => {
+  return new Promise(function(resolve, reject) {
+    pool.query(`select to_timestamp(t1.blocktime)::date as date, FLOOR(sum(CASE WHEN t1.type = 'createAccount' OR t1.type = 'createAccountWithSeed' THEN t1.uiAmount ELSE 0 END)) as deposit, FLOOR(sum(CASE WHEN t1.type = 'withdraw' THEN -1*t1.uiAmount ELSE 0 END)) as withdraw, FLOOR(sum(CASE WHEN t1.type = 'createAccount' OR t1.type = 'createAccountWithSeed' THEN t1.uiAmount ELSE 0 END)) + FLOOR(SUM(CASE WHEN t1.type = 'withdraw' THEN -1*t1.uiAmount ELSE 0 END)) as net from (select distinct * from stake_program_event_log where type like 'withdraw' OR type like 'createAccount' OR type like 'createAccountWithSeed' order by uiAmount desc) t1 group by date order by date asc;`, (error, results) => {
+      if (error) {
+        reject(error)
+      }
+      resolve(results.rows);
+    })
+  }) 
+}
+
   const getWalletLabels = (address) => {
     return new Promise(function(resolve, reject) {
       pool.query(`SELECT * FROM sol_address_defs where address = '${address}'`, (error, results) => {
@@ -100,30 +122,9 @@ const after_inflows = '2022-11-30'
     }) 
   }
 
-  const getStakeEvents = () => {
-    return new Promise(function(resolve, reject) {
-      pool.query(`select t1.program, t1.type, to_timestamp(t1.blocktime) as dt, t1.signature, t1.authority2, t1.source, t1.destination, t1.uiamount from (select distinct * from stake_program_event_log where uiAmount > 8000) t1 order by t1.blocktime desc limit 250;`, (error, results) => {
-        if (error) {
-          reject(error)
-        }
-        resolve(results.rows);
-      })
-    }) 
-  }
-
-  const getStakeChartData = () => {
-    return new Promise(function(resolve, reject) {
-      pool.query(`select to_timestamp(t1.blocktime)::date as date, FLOOR(sum(CASE WHEN t1.type = 'createAccount' OR t1.type = 'createAccountWithSeed' THEN t1.uiAmount ELSE 0 END)) as deposit, FLOOR(sum(CASE WHEN t1.type = 'withdraw' THEN t1.uiAmount ELSE 0 END)) as withdraw, FLOOR(sum(CASE WHEN t1.type = 'createAccount' OR t1.type = 'createAccountWithSeed' THEN t1.uiAmount ELSE 0 END)) - FLOOR(SUM(CASE WHEN t1.type = 'withdraw' THEN t1.uiAmount ELSE 0 END)) as net from (select distinct * from stake_program_event_log where type like 'withdraw' OR type like 'createAccount' OR type like 'createAccountWithSeed' order by uiAmount desc) t1 group by date order by date asc;`, (error, results) => {
-        if (error) {
-          reject(error)
-        }
-        resolve(results.rows);
-      })
-    }) 
-  }
-
-
   module.exports = {
+    getStakeEvents,
+    getStakeChartData,
     getWalletLabels,
     getPoolRatios,
     getExchangeBalance,
@@ -132,6 +133,4 @@ const after_inflows = '2022-11-30'
     getLatestEvents,
     getLatestBalances,
     getWebhookEvents,
-    getStakeEvents,
-    getStakeChartData
   }
