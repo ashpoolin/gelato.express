@@ -36,7 +36,7 @@ const getStakeChartData = () => {
 
 const getSolanaSupply = () => {
   return new Promise(function(resolve, reject) {
-    pool.query(`SELECT * FROM solana_supply where dt::date > '${after_inflows}'`, (error, results) => {
+    pool.query(`SELECT * FROM solana_supply_enhanced where dt::date > '${after_inflows}'`, (error, results) => {
       if (error) {
         reject(error)
       }
