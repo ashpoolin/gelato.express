@@ -75,6 +75,18 @@ const getSolanaSupply = () => {
         }
         resolve(results.rows);
       })
+    })
+  }
+
+
+  const getTotalExchangeBalance = () => {
+    return new Promise(function(resolve, reject) {
+      pool.query(`SELECT * FROM on_exchange_total_balance_log_w_delta;`, (error, results) => {
+        if (error) {
+          reject(error)
+        }
+        resolve(results.rows);
+      })
     }) 
   }
 
@@ -134,6 +146,7 @@ const getSolanaSupply = () => {
   }
 
   module.exports = {
+    getTotalExchangeBalance,
     getStakeEvents,
     getStakeChartData,
     getSolanaSupply,
