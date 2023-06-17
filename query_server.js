@@ -45,6 +45,17 @@ const getSolanaSupply = () => {
   }) 
 }
 
+const getUnlockSchedule = () => {
+  return new Promise(function(resolve, reject) {
+    pool.query(`select * from stake_unlock_schedule;`, (error, results) => {
+      if (error) {
+        reject(error)
+      }
+      resolve(results.rows);
+    })
+  }) 
+}
+
   const getWalletLabels = (address) => {
     return new Promise(function(resolve, reject) {
       pool.query(`SELECT * FROM sol_address_defs where address = '${address}'`, (error, results) => {
@@ -151,6 +162,7 @@ const getSolanaSupply = () => {
     getStakeChartData,
     getSolanaSupply,
     getWalletLabels,
+    getUnlockSchedule,
     getPoolRatios,
     getExchangeBalance,
     getExchangeSplBalance,
