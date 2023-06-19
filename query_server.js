@@ -56,6 +56,16 @@ const getUnlockSchedule = () => {
   }) 
 }
 
+const getLargestUnlocks = () => {
+  return new Promise(function(resolve, reject) {
+    pool.query(`select * from stake_largest_unlocks;`, (error, results) => {
+      if (error) {
+        reject(error)
+      }
+      resolve(results.rows);
+    })
+  }) 
+}
   const getWalletLabels = (address) => {
     return new Promise(function(resolve, reject) {
       pool.query(`SELECT * FROM sol_address_defs where address = '${address}'`, (error, results) => {
@@ -163,6 +173,7 @@ const getUnlockSchedule = () => {
     getSolanaSupply,
     getWalletLabels,
     getUnlockSchedule,
+    getLargestUnlocks,
     getPoolRatios,
     getExchangeBalance,
     getExchangeSplBalance,

@@ -39,6 +39,16 @@ app.get('/unlocks', (req, res) => {
   })
 })
 
+app.get('/largestunlocks', (req, res) => {
+  query_server.getLargestUnlocks()
+  .then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
 app.get('/labels/:owner', (req, res) => {
   query_server.getWalletLabels(req.params.owner)
   .then(response => {
