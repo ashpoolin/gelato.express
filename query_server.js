@@ -9,8 +9,9 @@ const pool = new Pool({
   });
 
   // gives you the last week of data
-const after = (new Date(Date.now() - 604800000)).toISOString().split('T')[0];
-const after_inflows = '2022-11-30'
+const after = (new Date(Date.now() - 604800000)).toISOString().split('T')[0]; // 7 days = 7day x 1000 ms x 60 sec x 60 min x 24 hours
+const after_inflows = (new Date(Date.now() - 7776000000)).toISOString().split('T')[0]; // 90 days = 90day x 1000 ms x 60 sec x 60 min x 24 hours
+const after_stake = '2022-04-01'
 
 const getStakeEvents = () => {
   return new Promise(function(resolve, reject) {
@@ -36,7 +37,7 @@ const getStakeChartData = () => {
 
 const getSolanaSupply = () => {
   return new Promise(function(resolve, reject) {
-    pool.query(`SELECT * FROM solana_supply_enhanced where dt::date > '${after_inflows}'`, (error, results) => {
+    pool.query(`SELECT * FROM solana_supply_enhanced where dt::date > '${after_stake}'`, (error, results) => {
       if (error) {
         reject(error)
       }
