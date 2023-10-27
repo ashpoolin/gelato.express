@@ -167,6 +167,17 @@ const getLargestUnlocks = () => {
     }) 
   }
 
+  const getStakeRuggers = () => {
+    return new Promise(function(resolve, reject) {
+      pool.query(`select * from stake_program_ruggers;`, (error, results) => {
+        if (error) {
+          reject(error)
+        }
+        resolve(results.rows);
+      })
+    }) 
+  }
+
   module.exports = {
     getTotalExchangeBalance,
     getStakeEvents,
@@ -182,4 +193,5 @@ const getLargestUnlocks = () => {
     getLatestEvents,
     getLatestBalances,
     getWebhookEvents,
+    getStakeRuggers
   }
