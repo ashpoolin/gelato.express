@@ -89,6 +89,16 @@ app.get('/whevents', (req, res) => {
   })
 })
 
+app.get('/wsevents', (req, res) => {
+  query_server.getWebsocketEvents()
+  .then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
 app.get('/stakeevents', (req, res) => {
   query_server.getStakeEvents()
   .then(response => {

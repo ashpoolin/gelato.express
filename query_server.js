@@ -167,6 +167,17 @@ const getLargestUnlocks = () => {
     }) 
   }
 
+  const getWebsocketEvents = () => {
+    return new Promise(function(resolve, reject) {
+      pool.query(`select * from websockets_sol_event_log_labeled where uiamount >= 9999 order by dt desc limit 100;`, (error, results) => {
+        if (error) {
+          reject(error)
+        }
+        resolve(results.rows);
+      })
+    }) 
+  }
+
   const getStakeRuggers = () => {
     return new Promise(function(resolve, reject) {
       pool.query(`select * from stake_program_ruggers;`, (error, results) => {
@@ -193,5 +204,6 @@ const getLargestUnlocks = () => {
     getLatestEvents,
     getLatestBalances,
     getWebhookEvents,
+    getWebsocketEvents,
     getStakeRuggers
   }
