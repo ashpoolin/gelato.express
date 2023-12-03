@@ -26,7 +26,7 @@ const getStakeEvents = () => {
 
 const getStakeChartData = () => {
   return new Promise(function(resolve, reject) {
-    pool.query(`select to_timestamp(t1.blocktime)::date as date, FLOOR(sum(CASE WHEN t1.type = 'createAccount' OR t1.type = 'createAccountWithSeed' THEN t1.uiAmount ELSE 0 END)) as deposit, FLOOR(sum(CASE WHEN t1.type = 'withdraw' THEN -1*t1.uiAmount ELSE 0 END)) as withdraw, FLOOR(sum(CASE WHEN t1.type = 'createAccount' OR t1.type = 'createAccountWithSeed' THEN t1.uiAmount ELSE 0 END)) + FLOOR(SUM(CASE WHEN t1.type = 'withdraw' THEN -1*t1.uiAmount ELSE 0 END)) as net from (select distinct * from stake_program_event_log where type like 'withdraw' OR type like 'createAccount' OR type like 'createAccountWithSeed' order by uiAmount desc) t1 group by date order by date asc;`, (error, results) => {
+    pool.query(`select to_timestamp(t1.blocktime)::date as date, FLOOR(sum(CASE WHEN t1.type = 'createAccount' OR t1.type = 'createAccountWithSeed' THEN t1.uiAmount ELSE 0 END)) as deposit, FLOOR(sum(CASE WHEN t1.type = 'withdraw' THEN -1*t1.uiAmount ELSE 0 END)) as withdraw, FLOOR(sum(CASE WHEN t1.type = 'createAccount' OR t1.type = 'createAccountWithSeed' THEN t1.uiAmount ELSE 0 END)) + FLOOR(SUM(CASE WHEN t1.type = 'withdraw' THEN -1*t1.uiAmount ELSE 0 END)) as net from (select * from stake_program_event_log where blocktime > extract(epoch from now() - interval '3 months') AND (type = 'withdraw' OR type like 'createAccount%') order by uiAmount desc) t1 group by date order by date asc;`, (error, results) => {
       if (error) {
         reject(error)
       }
