@@ -15,7 +15,7 @@ const after_stake = '2022-04-01'
 
 const getStakeEvents = () => {
   return new Promise(function(resolve, reject) {
-    pool.query(`select t1.program, t1.type, to_timestamp(t1.blocktime) as dt, t1.signature, t1.authority2, t1.source, t1.destination, t1.uiamount from (select distinct * from stake_program_event_log where uiAmount > 8000) t1 order by t1.blocktime desc limit 250;`, (error, results) => {
+    pool.query(`select t1.program, t1.type, to_timestamp(t1.blocktime) as dt, t1.signature, t1.authority2, t1.source, t1.destination, t1.uiamount from (select distinct * from stake_program_event_log where uiAmount > 8000) t1 order by t1.blocktime desc limit 1000;`, (error, results) => {
       if (error) {
         reject(error)
       }
@@ -169,7 +169,7 @@ const getLargestUnlocks = () => {
 
   const getWebsocketEvents = () => {
     return new Promise(function(resolve, reject) {
-      pool.query(`select * from websockets_sol_event_log_labeled where uiamount >= 9999 order by dt desc limit 100;`, (error, results) => {
+      pool.query(`select * from websockets_sol_event_log_labeled where uiamount >= 9999 order by dt desc limit 1000;`, (error, results) => {
         if (error) {
           reject(error)
         }
