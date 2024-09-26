@@ -181,15 +181,16 @@ const getLargestUnlocks = () => {
   async function getWebsocketEvents(page = 1, limit = 100) {
     const offset = (page - 1) * limit;
     const query = `
-      SELECT dt, signature, source, source_label, destination, destination_label, uiamount
-      FROM wsevents
+      SELECT dt, signature, source as source, source_label, destination as destination, destination_label, uiamount
+      FROM websockets_sol_event_log_labeled
+      WHERE uiamount >= 9999
       ORDER BY dt DESC
       LIMIT $1 OFFSET $2
     `;
     
     try {
       const result = await pool.query(query, [limit, offset]);
-      const totalCountResult = await pool.query('SELECT COUNT(*) FROM wsevents');
+      const totalCountResult = await pool.query('SELECT COUNT(*) FROM websockets_sol_event_log_labeled WHERE uiamount >= 9999');
       const totalCount = parseInt(totalCountResult.rows[0].count);
       
       return {
