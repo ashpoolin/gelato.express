@@ -89,8 +89,21 @@ app.get('/whevents', (req, res) => {
   })
 })
 
+// app.get('/wsevents', (req, res) => {
+//   query_server.getWebsocketEvents()
+//   .then(response => {
+//     res.status(200).send(response);
+//   })
+//   .catch(error => {
+//     res.status(500).send(error);
+//   })
+// })
+
 app.get('/wsevents', (req, res) => {
-  query_server.getWebsocketEvents()
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 100;
+  
+  query_server.getWebsocketEvents(page, limit)
   .then(response => {
     res.status(200).send(response);
   })

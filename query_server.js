@@ -167,15 +167,41 @@ const getLargestUnlocks = () => {
     }) 
   }
 
-  const getWebsocketEvents = () => {
-    return new Promise(function(resolve, reject) {
-      pool.query(`select * from websockets_sol_event_log_labeled where uiamount >= 9999 order by dt desc limit 1000;`, (error, results) => {
-        if (error) {
-          reject(error)
-        }
-        resolve(results.rows);
-      })
-    }) 
+  // const getWebsocketEvents = () => {
+  //   return new Promise(function(resolve, reject) {
+  //     pool.query(`select * from websockets_sol_event_log_labeled where uiamount >= 9999 order by dt desc limit 1000;`, (error, results) => {
+  //       if (error) {
+  //         reject(error)
+  //       }
+  //       resolve(results.rows);
+  //     })
+  //   }) 
+  // }
+
+  async function getWebsocketEvents(page = 1, limit = 100) {
+    const offset = (page - 1) * limit;
+    const query = `
+      SELECT dt, signature, source, source_label, destination, destination_label, uiamount
+      FROM wsevents
+      ORDER BY dt DESC
+      LIMIT $1 OFFSET $2
+    `;
+    
+    try {
+      const result = await pool.query(query, [limit, offset]);
+      const totalCountResult = await pool.query('SELECT COUNT(*) FROM wsevents');
+      const totalCount = parseInt(totalCountResult.rows[0].count);
+      
+      return {
+        data: result.rows,
+        totalCount: totalCount,
+        currentPage: page,
+        totalPages: Math.ceil(totalCount / limit)
+      };
+    } catch (err) {
+      console.error('Error executing query', err.stack);
+      throw err;
+    }
   }
 
   const getStakeRuggers = () => {
