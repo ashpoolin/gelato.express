@@ -35,7 +35,7 @@ async function getStakeEvents(page = 1, limit = 25) {
   
   try {
     const result = await pool.query(query, [limit, offset]);
-    const totalCountResult = await pool.query('SELECT COUNT(DISTINCT *) FROM stake_program_event_log WHERE uiAmount > 8000');
+    const totalCountResult = await pool.query('SELECT COUNT(*) FROM stake_program_event_log WHERE uiAmount > 8000');
     const totalCount = parseInt(totalCountResult.rows[0].count);
     
     return {
