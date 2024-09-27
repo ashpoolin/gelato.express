@@ -13,15 +13,41 @@ const after = (new Date(Date.now() - 604800000)).toISOString().split('T')[0]; //
 const after_inflows = (new Date(Date.now() - 7776000000)).toISOString().split('T')[0]; // 90 days = 90day x 1000 ms x 60 sec x 60 min x 24 hours
 const after_stake = '2022-04-01'
 
-const getStakeEvents = () => {
-  return new Promise(function(resolve, reject) {
-    pool.query(`select t1.program, t1.type, to_timestamp(t1.blocktime) as dt, t1.signature, t1.authority2, t1.source, t1.destination, t1.uiamount from (select distinct * from stake_program_event_log where uiAmount > 8000) t1 order by t1.blocktime desc limit 1000;`, (error, results) => {
-      if (error) {
-        reject(error)
-      }
-      resolve(results.rows);
-    })
-  }) 
+// const getStakeEvents = () => {
+//   return new Promise(function(resolve, reject) {
+//     pool.query(`select t1.program, t1.type, to_timestamp(t1.blocktime) as dt, t1.signature, t1.authority2, t1.source, t1.destination, t1.uiamount from (select distinct * from stake_program_event_log where uiAmount > 8000) t1 order by t1.blocktime desc limit 1000;`, (error, results) => {
+//       if (error) {
+//         reject(error)
+//       }
+//       resolve(results.rows);
+//     })
+//   }) 
+// }
+
+async function getStakeEvents(page = 1, limit = 25) {
+  const offset = (page - 1) * limit;
+  const query = `
+    SELECT t1.program, t1.type, to_timestamp(t1.blocktime) as dt, t1.signature, t1.authority2, t1.source, t1.destination, t1.uiamount
+    FROM (SELECT DISTINCT * FROM stake_program_event_log WHERE uiAmount > 8000) t1
+    ORDER BY t1.blocktime DESC
+    LIMIT $1 OFFSET $2
+  `;
+  
+  try {
+    const result = await pool.query(query, [limit, offset]);
+    const totalCountResult = await pool.query('SELECT COUNT(DISTINCT *) FROM stake_program_event_log WHERE uiAmount > 8000');
+    const totalCount = parseInt(totalCountResult.rows[0].count);
+    
+    return {
+      data: result.rows,
+      totalCount: totalCount,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit)
+    };
+  } catch (err) {
+    console.error('Error executing query', err.stack);
+    throw err;
+  }
 }
 
 const getStakeChartData = () => {
